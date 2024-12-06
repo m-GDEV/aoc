@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6jWFiPh/5wtXFSq1+IOfuWkMWnU0y8d7XOclZzxRAKGuqTYOBVSFPkDuSCFB4BAFxP+uDpZytT94iJeMtDhQNQ==",
+  "dgSpecHash": "OzRA4hWGN68=",
   "success": true,
-  "projectFilePath": "\\\\wsl.localhost\\Debian\\home\\musa\\aoc\\2\\2.csproj",
+  "projectFilePath": "/home/musa/aoc/2/2.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

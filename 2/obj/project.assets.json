@@ -8,36 +8,24 @@
     "net8.0": []
   },
   "packageFolders": {
-    "C:\\Users\\musa\\.nuget\\packages\\": {},
-    "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages": {},
-    "D:\\Windows Shit\\Visual Studio Shared Resources\\NuGetPackages": {}
+    "/home/musa/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "\\\\wsl.localhost\\Debian\\home\\musa\\aoc\\2\\2.csproj",
+      "projectUniqueName": "/home/musa/aoc/2/2.csproj",
       "projectName": "2",
-      "projectPath": "\\\\wsl.localhost\\Debian\\home\\musa\\aoc\\2\\2.csproj",
-      "packagesPath": "C:\\Users\\musa\\.nuget\\packages\\",
-      "outputPath": "\\\\wsl.localhost\\Debian\\home\\musa\\aoc\\2\\obj\\",
+      "projectPath": "/home/musa/aoc/2/2.csproj",
+      "packagesPath": "/home/musa/.nuget/packages/",
+      "outputPath": "/home/musa/aoc/2/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages",
-        "D:\\Windows Shit\\Visual Studio Shared Resources\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\musa\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.1.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/musa/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\DevExpress 24.1\\Components\\System\\Components\\Packages": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -76,7 +64,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.206/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

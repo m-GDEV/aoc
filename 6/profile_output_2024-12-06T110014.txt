@@ -1,0 +1,267 @@
+Timer unit: 1e-09 s
+
+Total time: 0.000119726 s
+File: /home/musa/aoc/6/part1.py
+Function: rotate_guard_right_90_deg at line 106
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   106                                           @line_profiler.profile
+   107                                           def rotate_guard_right_90_deg(guard):
+   108       156      19544.0    125.3     16.3      match guard:
+   109       156      43344.0    277.8     36.2          case "<":
+   110        39       6144.0    157.5      5.1              return "^"
+   111       117      19282.0    164.8     16.1          case ">":
+   112        39       5026.0    128.9      4.2              return "v"
+   113        78      11459.0    146.9      9.6          case "^":
+   114        39       4648.0    119.2      3.9              return ">"
+   115        39       5323.0    136.5      4.4          case "v":
+   116        39       4956.0    127.1      4.1              return "<"
+
+Total time: 0.00575951 s
+File: /home/musa/aoc/6/part1.py
+Function: find_occurences_of_value_in_grid at line 75
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    75                                           @line_profiler.profile
+    76                                           def find_occurences_of_value_in_grid(grid, value):
+    77         1        470.0    470.0      0.0      occurences = 0
+    78       131      14504.0    110.7      0.3      for i in range(len(grid)):
+    79     17030    2084478.0    122.4     36.2          for j in range(len(grid[i])):
+    80     16900    2849701.0    168.6     49.5              if grid[i][j] == value:
+    81      4988     809563.0    162.3     14.1                  occurences += 1
+    82                                               
+    83         1        791.0    791.0      0.0      return occurences
+
+Total time: 0.00596353 s
+File: /home/musa/aoc/6/part1.py
+Function: make_grid at line 37
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    37                                           @line_profiler.profile
+    38                                           def make_grid(s):
+    39         1        781.0    781.0      0.0      g = []
+    40                                           
+    41       131      18985.0    144.9      0.3      for i in s:
+    42       130      18463.0    142.0      0.3          mainList = []
+    43     17030    1899733.0    111.6     31.9          for j in i:
+    44     16900    3993341.0    236.3     67.0              mainList.append(j)
+    45                                                   
+    46       130      31597.0    243.1      0.5          g.append(mainList)
+    47                                           
+    48         1        634.0    634.0      0.0      return g
+
+Total time: 0.0259309 s
+File: /home/musa/aoc/6/part1.py
+Function: get_grid_spot at line 203
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   203                                           @line_profiler.profile
+   204                                           def get_grid_spot(grid, x, y):
+   205     16852    7465061.0    443.0     28.8      boundary_x = len(grid[0]) - 1
+   206     16852    3862501.0    229.2     14.9      boundary_y = len(grid) - 1
+   207                                           
+   208     16852    4926766.0    292.4     19.0      if x > boundary_x or x < 0: 
+   209                                                   raise Exception("spot does not exist")
+   210     16852    5452973.0    323.6     21.0      if y > boundary_y or y < 0:
+   211                                                   raise Exception("spot does not exist")
+   212                                           
+   213     16852    4223631.0    250.6     16.3      return grid[y][x]
+
+Total time: 0.0307808 s
+File: /home/musa/aoc/6/part1.py
+Function: move_guard_down at line 181
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   181                                           @line_profiler.profile
+   182                                           def move_guard_down(guard, grid):
+   183      1313     804661.0    612.8      2.6      guard_dir = guard[0]
+   184      1313     254382.0    193.7      0.8      if guard_dir != "v": raise Exception("Cannot move down when gaurd is not turned down")
+   185                                           
+   186      1313    1468190.0   1118.2      4.8      boundary_x = len(grid[0]) - 1
+   187      1313     262351.0    199.8      0.9      boundary_y = len(grid) - 1
+   188                                           
+   189      1313     205944.0    156.8      0.7      guard_pos = guard[1]
+   190      1313     164173.0    125.0      0.5      gpx = guard_pos[1]
+   191      1313     365662.0    278.5      1.2      gpy = guard_pos[0]
+   192                                           
+   193                                               # Guard is leaving, simply mark their disappearance
+   194      1313    1329928.0   1012.9      4.3      if gpy + 1 > boundary_y:
+   195                                                   set_grid_spot(grid, "X", gpx,gpy)
+   196                                               # Guard hits roadblock
+   197      1313    9054293.0   6895.9     29.4      elif get_grid_spot(grid, gpx,gpy + 1) == "#":
+   198        39     526422.0  13498.0      1.7          set_grid_spot(grid, rotate_guard_right_90_deg(guard[0]),gpx,gpy)
+   199                                               else:
+   200      1274    9844002.0   7726.8     32.0          set_grid_spot(grid, "X",gpx,gpy)
+   201      1274    6500765.0   5102.6     21.1          set_grid_spot(grid, "v", gpx,gpy + 1)
+
+Total time: 0.033098 s
+File: /home/musa/aoc/6/part1.py
+Function: move_guard_up at line 159
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   159                                           @line_profiler.profile
+   160                                           def move_guard_up(guard, grid):
+   161      1366    1120089.0    820.0      3.4      guard_dir = guard[0]
+   162      1366     359619.0    263.3      1.1      if guard_dir != "^": raise Exception("Cannot move up when gaurd is not turned up")
+   163                                           
+   164      1366    1628093.0   1191.9      4.9      boundary_x = len(grid[0]) - 1
+   165      1366     390385.0    285.8      1.2      boundary_y = len(grid) - 1
+   166                                           
+   167      1366     287085.0    210.2      0.9      guard_pos = guard[1]
+   168      1366     204361.0    149.6      0.6      gpx = guard_pos[1]
+   169      1366     206599.0    151.2      0.6      gpy = guard_pos[0]
+   170                                           
+   171                                               # Guard is leaving, simply mark their disappearance
+   172      1366     415562.0    304.2      1.3      if gpy - 1 < 0:
+   173         1      12022.0  12022.0      0.0          set_grid_spot(grid, "X", gpx,gpy)
+   174                                               # Guard hits roadblock
+   175      1365   10004820.0   7329.5     30.2      elif get_grid_spot(grid, gpx,gpy - 1) == "#":
+   176        39     492578.0  12630.2      1.5          set_grid_spot(grid, rotate_guard_right_90_deg(guard[0]), gpx,gpy) 
+   177                                               else:
+   178      1326   11111711.0   8379.9     33.6          set_grid_spot(grid, "X", gpx,gpy)
+   179      1326    6865091.0   5177.3     20.7          set_grid_spot(grid, "^", gpx,gpy - 1)
+
+Total time: 0.0370611 s
+File: /home/musa/aoc/6/part1.py
+Function: move_guard_left at line 118
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   118                                           @line_profiler.profile
+   119                                           def move_guard_left(guard, grid):
+   120      1511    1265893.0    837.8      3.4      guard_dir = guard[0]
+   121      1511     376236.0    249.0      1.0      if guard_dir != "<": raise Exception("Cannot move left when gaurd is not turned left")
+   122                                           
+   123      1511     298363.0    197.5      0.8      guard_pos = guard[1]
+   124      1511     442532.0    292.9      1.2      gpx = guard_pos[1]
+   125      1511     240488.0    159.2      0.6      gpy = guard_pos[0]
+   126                                           
+   127                                               # Guard is leaving, simply mark their disappearance
+   128      1511    1342299.0    888.4      3.6      if gpx - 1 < 0:
+   129                                                   set_grid_spot(grid, "X", gpx,gpy)
+   130                                               # Guard hits roadblock
+   131      1511   13171317.0   8717.0     35.5      elif get_grid_spot(grid, gpx - 1,gpy) == "#":
+   132        39     494595.0  12681.9      1.3          set_grid_spot(grid, rotate_guard_right_90_deg(guard[0]), gpx,gpy)
+   133                                               else:
+   134      1472   11876424.0   8068.2     32.0          set_grid_spot(grid, "X", gpx,gpy)
+   135      1472    7552993.0   5131.1     20.4          set_grid_spot(grid, "<", gpx - 1, gpy)
+
+Total time: 0.0377685 s
+File: /home/musa/aoc/6/part1.py
+Function: move_guard_right at line 137
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   137                                           @line_profiler.profile
+   138                                           def move_guard_right(guard, grid):
+   139      1480    1292930.0    873.6      3.4      guard_dir = guard[0]
+   140      1480     381660.0    257.9      1.0      if guard_dir != ">": raise Exception("Cannot move right when gaurd is not turned right")
+   141                                           
+   142      1480    1737058.0   1173.7      4.6      boundary_x = len(grid[0]) - 1
+   143      1480     339523.0    229.4      0.9      boundary_y = len(grid) - 1
+   144                                           
+   145      1480     246192.0    166.3      0.7      guard_pos = guard[1]
+   146      1480     535816.0    362.0      1.4      gpx = guard_pos[1]
+   147      1480     364031.0    246.0      1.0      gpy = guard_pos[0]
+   148                                           
+   149                                               # Guard is leaving, simply mark their disappearance
+   150      1480    1629607.0   1101.1      4.3      if gpx + 1 > boundary_x:
+   151                                                   set_grid_spot(grid, "X", gpx,gpy)
+   152                                               # Guard hits roadblock
+   153      1480   11361512.0   7676.7     30.1      elif get_grid_spot(grid, gpx + 1,gpy) == "#":
+   154        39     468223.0  12005.7      1.2          set_grid_spot(grid, rotate_guard_right_90_deg(guard[0]), gpx,gpy)
+   155                                               else:
+   156      1441   11809489.0   8195.3     31.3          set_grid_spot(grid, "X", gpx,gpy)
+   157      1441    7602497.0   5275.8     20.1          set_grid_spot(grid, ">", gpx + 1,gpy)
+
+Total time: 0.0451325 s
+File: /home/musa/aoc/6/part1.py
+Function: set_grid_spot at line 215
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   215                                           @line_profiler.profile
+   216                                           def set_grid_spot(grid, newvalue, x, y):
+   217     11183   38575620.0   3449.5     85.5      get_grid_spot(grid, x, y)
+   218     11183    6556888.0    586.3     14.5      grid[y][x] = newvalue
+
+Total time: 190.203 s
+File: /home/musa/aoc/6/part1.py
+Function: find_value_in_grid at line 66
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    66                                           @line_profiler.profile
+    67                                           def find_value_in_grid(grid, value):
+    68   5109790  650324807.0    127.3      0.3      for i in range(len(grid)):
+    69 664117080        8e+10    118.5     41.4          for j in range(len(grid[i])):
+    70 659052654        1e+11    168.1     58.3              if grid[i][j] == value:
+    71     11340   18243932.0   1608.8      0.0                  return (i, j)
+    72                                               
+    73     34024   37274075.0   1095.5      0.0      return None
+
+Total time: 191.976 s
+File: /home/musa/aoc/6/part1.py
+Function: traverse_once_in_grid at line 220
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   220                                           @line_profiler.profile
+   221                                           def traverse_once_in_grid(grid):
+   222      5670        2e+11    3e+07     99.9      guard = find_gaurd_in_grid(grid)
+   223                                           
+   224      5670    5485646.0    967.5      0.0      match guard[0]:
+   225      5670    5569361.0    982.3      0.0          case "<":
+   226      1511   50039230.0  33116.6      0.0              move_guard_left(guard, grid)
+   227      4159    1934841.0    465.2      0.0          case ">":
+   228      1480   52527569.0  35491.6      0.0              move_guard_right(guard, grid)
+   229      2679    2210478.0    825.1      0.0          case "^":
+   230      1366   46277182.0  33877.9      0.0              move_guard_up(guard, grid)
+   231      1313     212109.0    161.5      0.0          case "v":
+   232      1313   43003898.0  32752.4      0.0              move_guard_down(guard, grid)
+
+Total time: 384.476 s
+File: /home/musa/aoc/6/part1.py
+Function: find_gaurd_in_grid at line 85
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    85                                           @line_profiler.profile
+    86                                           def find_gaurd_in_grid(grid):
+    87     11341        1e+11    9e+06     25.7      left = find_value_in_grid(grid, "<")
+    88     11341        9e+10    8e+06     23.8      right = find_value_in_grid(grid, ">")
+    89     11341        1e+11    9e+06     25.1      top = find_value_in_grid(grid, "^")
+    90     11341        1e+11    9e+06     25.3      bottom = find_value_in_grid(grid, "v")
+    91                                           
+    92     11341    8383431.0    739.2      0.0      if left and not right and not top and not bottom:
+    93      3022    2690395.0    890.3      0.0          return ("<", left)
+    94      8319    5008072.0    602.0      0.0      if right and not left and not top and not bottom:
+    95      2960    2658539.0    898.2      0.0          return (">", right)
+    96      5359    4335396.0    809.0      0.0      if top and not left and not right and not bottom:
+    97      2732    2359968.0    863.8      0.0          return ("^", top)
+    98      2627    2901959.0   1104.7      0.0      if bottom and not left and not right and not top:
+    99      2626     949408.0    361.5      0.0          return ("v", bottom)
+   100                                               
+   101         1        377.0    377.0      0.0      if not left and not right and not top and not bottom:
+   102         1        462.0    462.0      0.0          return None
+   103                                           
+   104                                               raise Exception("why are there two gaurds?")
+
+  0.00 seconds - /home/musa/aoc/6/part1.py:106 - rotate_guard_right_90_deg
+  0.01 seconds - /home/musa/aoc/6/part1.py:75 - find_occurences_of_value_in_grid
+  0.01 seconds - /home/musa/aoc/6/part1.py:37 - make_grid
+  0.03 seconds - /home/musa/aoc/6/part1.py:203 - get_grid_spot
+  0.03 seconds - /home/musa/aoc/6/part1.py:181 - move_guard_down
+  0.03 seconds - /home/musa/aoc/6/part1.py:159 - move_guard_up
+  0.04 seconds - /home/musa/aoc/6/part1.py:118 - move_guard_left
+  0.04 seconds - /home/musa/aoc/6/part1.py:137 - move_guard_right
+  0.05 seconds - /home/musa/aoc/6/part1.py:215 - set_grid_spot
+190.20 seconds - /home/musa/aoc/6/part1.py:66 - find_value_in_grid
+191.98 seconds - /home/musa/aoc/6/part1.py:220 - traverse_once_in_grid
+384.48 seconds - /home/musa/aoc/6/part1.py:85 - find_gaurd_in_grid

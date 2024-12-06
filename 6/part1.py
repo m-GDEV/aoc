@@ -1,5 +1,6 @@
 # Part 1
 import line_profiler
+import copy
 
 class bcolors:
     HEADER = '\033[95m'
@@ -13,6 +14,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 endkey = "\t"
+invalid_chars = ["<", ">", "^", "v", "#"]
 
 # Methods
 def print_with_color(text, color, endk=endkey):
@@ -38,6 +40,9 @@ def get_remote():
 def make_grid(s):
     g = []
 
+    boundary_y = len(s) - 1
+    boundary_x = len(s[0]) - 1
+
     for i in s:
         mainList = []
         for j in i:
@@ -46,6 +51,25 @@ def make_grid(s):
         g.append(mainList)
 
     return g
+
+def format_grid(g):
+    for i in range(len(g)):
+        for j in range(len(g[i])):
+            val = g[i][j]
+            if val == "^" or val == "v" or val == "<" or val == ">" or val == "#":
+                continue
+
+            left = get_grid_spot(g, j - 1, i, False)
+            right = get_grid_spot(g, j + 1, i, False)
+            top = get_grid_spot(g, j, i - 1, False)
+            bottom = get_grid_spot(g, j, i + 1, False)
+
+            if left != None and right != None and top != None and bottom != None:
+                g[i][j] = "+"
+            elif left != None and right != None:
+                g[i][j] = "-"
+            elif top != None and bottom != None:
+                g[i][j] = "|"
 
 def print_grid(s):
     for colnum in range(len(s)):
@@ -213,14 +237,18 @@ def move_guard_down(guard, grid):
         return ("v", (gpy + 1, gpx))
 
 @line_profiler.profile
-def get_grid_spot(grid, x, y):
+def get_grid_spot(grid, x, y, throwException=True):
     boundary_x = len(grid[0]) - 1
     boundary_y = len(grid) - 1
 
     if x > boundary_x or x < 0: 
-        raise Exception("spot does not exist")
+        if throwException:
+            raise Exception("spot does not exist")
+        else: return None
     if y > boundary_y or y < 0:
-        raise Exception("spot does not exist")
+        if throwException:
+            raise Exception("spot does not exist")
+        else: return None
 
     return grid[y][x]
 
@@ -243,29 +271,76 @@ def traverse_once_in_grid(grid, guard):
         case "v":
             return move_guard_down(guard, grid)
 
+
+def try_traversing_10000_times(grid):
+    # this method adds an obstruction to the grid and then tries to traverse the grid 10000 times
+    # if we are still traversion the grid after 10000 times, then we have an infinite loop
+
+    guard = find_gaurd_in_grid(grid)
+    for i in range(10000):
+        if guard == None:
+            return False
+        guard = traverse_once_in_grid(grid, guard)
+        # print_grid(grid)
+    return True
+
+
+def check_each_grid_cell_for_infinite_loop(grid):
+    res_list = []
+    for i in range(len(grid)):
+        print(f"Traversing cell row {i}")
+        for j in range(len(grid[i])):
+            if grid[i][j] in invalid_chars:
+                continue
+            else:
+                old_grid = copy.deepcopy(grid)
+                old = grid[i][j]
+                grid[i][j] = "#"
+                makes_it_infinite = try_traversing_10000_times(grid)
+                res_list.append((makes_it_infinite, (i, j)))
+                grid[i][j] = old
+                grid = old_grid
+        
+    return res_list
+
 # Logic
 
 def main():
-    f = get_local()
+    f = get_remote()
 
     s = f.split("\n")
-    # del s[-1]
+    del s[-1]
 
     g = make_grid(s)
 
-    print_grid(g)
+    # print_grid(g)
+    # formtat_grid(g)
 
-    traverse_num = 0
-    guard = find_gaurd_in_grid(g)
-    while guard != None:
-        if traverse_num % 100 == 0:
-            print(f"Traversed {traverse_num} times")
-        guard = traverse_once_in_grid(g, guard)
-        traverse_num += 1
-        print()
-        print_grid(g)
+    res = check_each_grid_cell_for_infinite_loop(g)
 
-    o = find_occurences_of_value_in_grid(g, "X")
-    print(f"Found X {o} times in grid")
+    valid = 0 
+    for i in res:
+        if i[0] is True:
+            valid  += 1
+            # print(i)
+            # gg = make_grid(s)
+            # ypos = i[1][0]
+            # xpos = i[1][1]
+            # gg[ypos][xpos] = "O"
+            # print_grid(gg)
+
+    print(valid)
+    # traverse_num = 0
+    # guard = find_gaurd_in_grid(g)
+    # while guard != None:
+    #     if traverse_num % 100 == 0:
+    #         print(f"Traversed {traverse_num} times")
+    #     guard = traverse_once_in_grid(g, guard)
+    #     traverse_num += 1
+    #     print()
+    #     print_grid(g)
+
+    # o = find_occurences_of_value_in_grid(g, "X")
+    # print(f"Found X {o} times in grid")
 
 main()

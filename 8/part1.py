@@ -46,7 +46,7 @@ def eval_left_to_right(s):
 
     while op != None:
 
-        op = re.match("(\\*|\\+)", s)
+        op = re.match("(\\*|\\+|\\>)", s)
         if op is None:
             continue
         op = op.groups()[0]
@@ -56,7 +56,10 @@ def eval_left_to_right(s):
         n2 = n2.groups()[0]
         s = s.removeprefix(str(n2))
 
-        total = eval(str(total) + op + n2) 
+        if op == ">":
+            total = int(str(total) + n2)
+        else:
+            total = eval(str(total) + op + n2) 
 
     return total
 
@@ -90,7 +93,8 @@ def main():
         nums = i[1]
         l = len(nums) - 1
 
-        combs = itertools.product('+*', repeat=l)
+        # thrid operator is meant to be '||' but i use > 
+        combs = itertools.product('+*>', repeat=l)
         ll = list(combs)
 
         # Iterate through all combinations of operators placed in between nums

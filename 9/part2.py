@@ -22,9 +22,14 @@ class File:
         self.Moved = False
         self.len = Len
 
+    def __str__(self):
+        return f"FILE: {self.id=}, {self.len=}, {self.Moved=}"
+
 class EmptyBlock:
     def __init__(self, Length):
         self.len = Length
+    def __str__(self):
+        return f"BLOCK: {self.len=}"
 
 # Generic Methods
 def get_local():
@@ -69,8 +74,8 @@ def expand_disk_map(map):
         empty_space_len = int(map[i+1])
 
         res.append(File(id, fileLen))
-
-        res.append(EmptyBlock(empty_space_len))  
+        if empty_space_len != 0:
+            res.append(EmptyBlock(empty_space_len))  
 
         id += 1
 
@@ -80,16 +85,22 @@ def expand_disk_map(map):
 
     return res 
 
-def print_disk_map(map):
+def disk_map_to_str(map, sep=""):
+    map_str = ""
     for i in map:
         if isinstance(i, File):
             for j in range(i.len):
-                print(i.id, end="")
+                map_str += str(i.id)
         if isinstance(i, EmptyBlock):
             for k in range(i.len):
-                print(".", end="")
+                map_str += "."
+            
+        map_str += sep
+        
+    return map_str
     
-    print()
+def print_disk_map(map, sep=""):
+    print(disk_map_to_str(map, sep))
 
 @line_profiler.profile
 def find_in_list(l, val):
@@ -98,103 +109,92 @@ def find_in_list(l, val):
     except:
         return -1
 
-@line_profiler.profile
-def move_blocks(map):
-    m = list(map)
-    emptyPlace = find_in_list(m, ".")
-
-    while emptyPlace != -1:
-        m[emptyPlace] = m[-1]
-        del m[-1]
-
-        emptyPlace = find_in_list(m, ".")
-    
-    return m
 
 @line_profiler.profile
 def calculate_checksum(map):
-    id = 0
     sum = 0
+    pos = 0
 
-    for i in range(len(map)):
-        sum += (id * int(map[i]))
-        id += 1
-    
+    for i in map:
+        if isinstance(i, File):
+            for j in range(i.len):
+                sum += (i.id * pos)
+                pos += 1
+        if isinstance(i, EmptyBlock):
+            pos += i.len
+
     return sum
 
+def swap_block_and_file(l, block: EmptyBlock, file: File):
+    if isinstance(block, EmptyBlock) is False:
+        raise Exception("Wtf are you doing")
+    if isinstance(file, File) is False:
+        raise Exception("Wtf are you doing")
 
-def get_last_block(l, start_index):
-    if len(l) < 1:
-        return -1
+    blockIndex = l.index(block)
+    fileIndex = l.index(file)
+
+    l[blockIndex], l[fileIndex] = l[fileIndex], EmptyBlock(file.len)
+
+    if block.len > file.len:
+        l.insert(blockIndex+1, EmptyBlock(block.len - file.len))
+        return True
+
+    return False
+
+def find_empty_block(l, len, end_index):
+    for i in range(0, end_index):
+        val = l[i]
+        if isinstance(val, EmptyBlock):
+            if val.len >= len:
+                return val
     
-    og_char = l[-1]
-    start_index = -1
-    size_of_file = 0
+    return None
 
-    # allows for custom start index so caller can choose not to repeat
-    for i in range(start_index, 0, -1):
-        if l[i] != og_char:
-            break
-        else:
-            size_of_file += 1
-            start_index = i
+def move_blocks(map):
+    l = map.copy()
 
-    # File: (id, size, where this file starts in the list)
-    return (og_char, size_of_file, start_index)
+    i = len(l) - 1
+    while i != 0:
+        val = l[i]
+        # print(f"index: {i}, {val}")
+        if isinstance(val, File):
+           if val.Moved is False:
+            block = find_empty_block(l, val.len, i)
+            if block != None:
+                res = swap_block_and_file(l, block, val)
+                if res is True: 
+                    i += 1
+                val.Moved = True
+        # print_disk_map(l)
 
-def find_x_len_block(l, len):
-    block = "." * len
-    try:
-        l.index(block)
-    except:
-        return -1
-
-def replace_block_with_file(l, fileChar, fileSize, fileIndex, blockIndex):
-    fIndex = fileIndex
-    bIndex = blockIndex
-    for i in range(fileSize):
-        l[bIndex] = fileChar
-        bIndex += 1
-    
-    for i in range(fileSize):
-        l[fIndex] = "."
-        fIndex += 1
-
-def move_block2(m):
-    last_block = get_last_block(m, len(m) - 1)
-
-    while last_block != -1:
-        og_char = last_block[0]
-        file_size = last_block[1]
-        file_start_index = last_block[2]
-        li = find_x_len_block(m, file_size)
-
-        if li != -1:
-            replace_block_with_file(m, og_char, file_size, file_start_index, li)
-
-        last_block = get_last_block(m, file_start_index)
+        i -= 1
+        
+    return l
 
 # Logic
 def main():
 
-    # s = get_remote(9)
+    s = get_remote(9)
     # s = get_local()
     # s = "12345"
     # s = "1010101010101010101010"
-    s = "2333133121414131402"
+    # s = "2333133121414131402"
     f = expand_disk_map(s)
     print_disk_map(f)
+    b = move_blocks(f)
+    print_disk_map(b)
     # get_last_block(f)
     # b = move_blocks(f) 
     # b = move_block2(f)
-    # c = calculate_checksum(b) 
+    c = calculate_checksum(b) 
 
-    # print("\n\nOriginal:", s)
-    # print("Expanded: ", end="")
-    # print_list(f, endk="")
-    # print("Blocks Moved: ", end="")
-    # print_list(b, endk="")
-    # print(f"Code: {c}")
+    print("\n\nOriginal:", s)
+    print("Expanded: ", end="")
+    print_disk_map(f)
+    print("Blocks Moved: ", end="")
+    print_disk_map(b)
+    print(f"Code: {c}")
 
 
 main()

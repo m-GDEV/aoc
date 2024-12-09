@@ -49,7 +49,7 @@ def expand_disk_map(map):
     # if len(map) % 2 != 0:
     #     raise Exception("Length of map needs to be divisible by 2")
 
-    res = ""
+    res = []
 
     id = 0 
 
@@ -58,16 +58,16 @@ def expand_disk_map(map):
         n2 = int(map[i+1])
 
         for i in range(n1):
-            res += str(id)
+            res.append(id)
         
         for i in range(n2):
-            res += str(".")
+            res.append(".")
 
         id += 1
 
     n1 = int(map[len(map) - 1])
     for i in range(n1):
-        res += str(id)
+        res.append(id)
 
     return res 
 
@@ -89,7 +89,7 @@ def move_blocks(map):
 
         emptyPlace = find_in_list(m, ".")
     
-    return "".join(m)
+    return m
 
 @line_profiler.profile
 def calculate_checksum(map):
@@ -105,15 +105,16 @@ def calculate_checksum(map):
 # Logic
 def main():
 
-    # s = get_remote(9)
-    s = get_local()
+    s = get_remote(9)
+    # s = get_local()
+    # s = "1010101010101010101010"
     f = expand_disk_map(s)
     b = move_blocks(f) 
     c = calculate_checksum(b) 
 
     print(f)
     print(b)
-    print(c)
+    print(f"\n\nCode: {c}")
 
 
 main()

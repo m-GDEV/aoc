@@ -15,112 +15,118 @@ class bcolors:
 
 endkey = "\t"
 
-# Methods
+# Generic Methods
+def get_local():
+    f = """............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............"""
+
+    s = f.split("\n")
+    return s
+
+
+def get_remote(path):
+    f = open(path, "r")
+    s = f.split("\n")
+    del s[-1]
+    return s
+
 def print_with_color(text, color, endk=endkey):
     print(f"{color}{text}{bcolors.ENDC}", end=endk)
 
-def get_local():
-    return """190: 10 19
-3267: 81 40 27
-83: 17 5
-156: 15 6
-7290: 6 8 6 15
-161011: 16 10 13
-192: 17 8 14
-21037: 9 7 18 13
-292: 11 6 16 20"""
+def print_list(list, append_val=""):
+    for i in list:
+        print(append_val, i)
 
+def print_dict(dict):
+    f = dict.items()
 
-def get_remote():
-    f = open("./7/input", "r")
-    return f.read()
+    for i in f:
+        print(f"key: {i[0]}")
+        print_list(i[1], "--> ") 
 
+print
 
-def eval_left_to_right(s):
-    n1 = re.match('(\\d+)', s)
-    n1 = n1.groups()[0]
-    total = int(n1)
-    s = s.removeprefix(str(n1))
+# Grid methods
+def make_grid(s):
+    g = []
 
-    op = "x"
+    for i in s:
+        mainList = []
+        for j in i:
+            mainList.append(j)
+        
+        g.append(mainList)
 
-    while op != None:
+    return g
 
-        op = re.match("(\\*|\\+|\\>)", s)
-        if op is None:
-            continue
-        op = op.groups()[0]
-        s = s.removeprefix(str(op))
+def print_grid(s):
+    for colnum in range(len(s)):
+        print_with_color(f"{colnum}", bcolors.HEADER)
 
-        n2 = re.match('(\\d+)', s)
-        n2 = n2.groups()[0]
-        s = s.removeprefix(str(n2))
+    print()
 
-        if op == ">":
-            total = int(str(total) + n2)
-        else:
-            total = eval(str(total) + op + n2) 
+    for i in range(len(s)):
+        print_with_color(i, bcolors.HEADER, endk=" ")
+        for j in range(len(s[i])):
+            val = s[i][j]
+            if val != ".":
+                print_with_color(val, bcolors.FAIL)
+            else:
+                print(val, end=endkey)
+        print("\n")
 
-    return total
+def find_value_in_grid(grid, value):
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if grid[i][j] == value:
+                return (i, j)
+    
+    return None
+
+def find_occurences_of_value_in_grid(grid, value):
+    occurences = 0
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if grid[i][j] == value:
+                occurences += 1
+    
+    return occurences
+
+def find_all_antennas(grid):
+    ants = {}
+
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            val = grid[i][j]
+            if val != ".":
+                obj = (i, j)
+
+                list_of_ants = ants.get(val)
+                if list_of_ants is None:
+                    ants[val] = [ obj ]
+                else:
+                    list_of_ants.append(obj)
+    return ants
 
 # Logic
 def main():
 
-    f = get_remote()
+    s = get_local()
+    g = make_grid(s)
 
-    s = f.split("\n")
-    del s[-1]
+    print_grid(g)
 
-    # Gather Info
-    info = []
-    for i in s:
-        sp = i.split(":")
-        target = sp[0]
-        nums = sp[1].split(" ")
-        nums.pop(0)
-        info.append((target, nums))
-
-
-    # Main stuff
-    final = 0
-    final_count = 0
-
-    # Iterate through all lines in input
-    for i in info:
-        completed = False 
-
-        target = int(i[0])
-        nums = i[1]
-        l = len(nums) - 1
-
-        # thrid operator is meant to be '||' but i use > 
-        combs = itertools.product('+*>', repeat=l)
-        ll = list(combs)
-
-        # Iterate through all combinations of operators placed in between nums
-        for comb in ll:
-            if completed is True:
-                break
-            eval_str = ""
-
-            # Create string that inserts operators into numbers
-            for k in range(len(nums)):
-                eval_str += nums[k]
-                if k != len(nums) - 1:
-                    eval_str += comb[k]
-
-            # Evaluate expression left to right
-            res = eval_left_to_right(eval_str)
-            if res == target:
-                final += res
-                completed = True
-                final_count += 1
-                # print(f"Result is True: {target=} | {res=} = {eval_str}")
-                print(f"{final_count} True Expressions")
-            else:
-                pass
-                # print(f"Result is False: {target=} | {res=} = {eval_str}")
-    
-    print(final)
+    l = find_all_antennas(g)
+    print_dict(l)
 
 main()

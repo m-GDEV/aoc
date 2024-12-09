@@ -1,6 +1,7 @@
 # Part 1
 import itertools
 import re
+import line_profiler
 
 class bcolors:
     HEADER = '\033[95m'
@@ -21,11 +22,13 @@ def get_local():
 
     return f
 
-def get_remote(path):
-    f = open(path, "r")
+@line_profiler.profile
+def get_remote(day):
+    f = open(f"./{day}/input", "r") 
+    f = f.read()
     s = f.split("\n")
     del s[-1]
-    return s
+    return s[0]
 
 def print_with_color(text, color, endk=endkey):
     print(f"{color}{text}{bcolors.ENDC}", end=endk)
@@ -41,16 +44,76 @@ def print_dict(dict):
         print(f"key: {i[0]}")
         print_list(i[1], "--> ") 
 
+@line_profiler.profile
+def expand_disk_map(map):
+    # if len(map) % 2 != 0:
+    #     raise Exception("Length of map needs to be divisible by 2")
+
+    res = ""
+
+    id = 0 
+
+    for i in range(0, len(map) - 1, 2):
+        n1 = int(map[i])
+        n2 = int(map[i+1])
+
+        for i in range(n1):
+            res += str(id)
+        
+        for i in range(n2):
+            res += str(".")
+
+        id += 1
+
+    n1 = int(map[len(map) - 1])
+    for i in range(n1):
+        res += str(id)
+
+    return res 
+
+@line_profiler.profile
+def find_in_list(l, val):
+    try:
+        return l.index(val)
+    except:
+        return -1
+
+@line_profiler.profile
+def move_blocks(map):
+    m = list(map)
+    emptyPlace = find_in_list(m, ".")
+
+    while emptyPlace != -1:
+        m[emptyPlace] = m[-1]
+        del m[-1]
+
+        emptyPlace = find_in_list(m, ".")
+    
+    return "".join(m)
+
+@line_profiler.profile
+def calculate_checksum(map):
+    id = 0
+    sum = 0
+
+    for i in range(len(map)):
+        sum += (id * int(map[i]))
+        id += 1
+    
+    return sum
 
 # Logic
 def main():
 
+    # s = get_remote(9)
     s = get_local()
-    g = make_grid(s)
+    f = expand_disk_map(s)
+    b = move_blocks(f) 
+    c = calculate_checksum(b) 
 
-    print_grid(g)
+    print(f)
+    print(b)
+    print(c)
 
-    l = find_all_antennas(g)
-    print_dict(l)
 
 main()
